@@ -1,26 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Lmi3d.GoSdk;
 using Lmi3d.Zen;
 using Lmi3d.Zen.Io;
-using Lmi3d.Zen.Data;
 using Lmi3d.GoSdk.Messages;
 using System.Threading;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
+using Emgu.CV;
+using Emgu.CV.CvEnum;
+using System.Drawing;
+using Emgu.CV.Structure;
 
 namespace ProfileOps
 {
@@ -76,8 +69,11 @@ namespace ProfileOps
         static string ipAddr = "127.0.0.1";
         SynchronizationContext _syncContext;
         BackgroundWorker _profileProcessWorker;
+        List<double> zValueList;
         Mutex mutex;
         public static string filePath = @"C:\ProfileData.csv";
+        public static string rawDataPath = @"C:\RawData.csv";
+        public static string imgFilePath = @"C:\test.bmp";
         private void Window_Closed(object sender, EventArgs e)
         {
 
@@ -93,9 +89,15 @@ namespace ProfileOps
             _dataList = new List<KObject>();
             _profileProcessWorker = new BackgroundWorker();
             _profileProcessWorker.DoWork += _profileProcessWorker_DoWork;
+            zValueList = new List<double>();
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
+            }
+
+            if (File.Exists(imgFilePath))
+            {
+                File.Delete(imgFilePath);
             }
 
         }
@@ -106,7 +108,59 @@ namespace ProfileOps
             {
                 ProfileProcessingFunc(item, _dataList.IndexOf(item));
             }
+
+            List<List<int>> splittedData = new List<List<int>>();
+
+            splittedData = Range2Pixel(52);
+
+
+
+            BitmapGenerator(splittedData, Range2Pixel());
+
+            _syncContext.Post(new SendOrPostCallback(delegate
+            {
+
+                updateMsg("Data Processing Done");
+
+                updateMsg("Range2Pixel():" + splittedData.Count.ToString());
+            }), null);
+
         }
+
+        
+
+        /// <summary>
+        /// using opencv to generate 16bit greyscale bitmap
+        /// </summary>
+        /// 
+
+        void BitmapGenerator(List<List<int>> splittedData, List<int> listData)
+        {
+            int width = splittedData[0].Count;
+            int height = splittedData.Count;
+            System.Drawing.Size size = new System.Drawing.Size(width, height);;
+            GCHandle gc = GCHandle.Alloc(listData);
+            Image<Gray,Byte> image = new Image<Gray, Byte>(width,height);
+            for (int i = 0; i < height; i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    image[i, j] = new Gray(splittedData[i][j]);
+                }
+            }
+
+
+            image.Save(imgFilePath);
+
+        }
+
+
+
+
+
+
+        double minZ = 0;
+        double maxZ = 0;
 
 
         void ProfileProcessingFunc(KObject data, int dataQuene)
@@ -117,6 +171,8 @@ namespace ProfileOps
             DataContext _dataContext = new DataContext();
             ProfileShape _profileShape = new ProfileShape();
             StringBuilder sb = new StringBuilder();
+            StringBuilder rawSb = new StringBuilder();
+
 
             for (UInt32 i = 0; i < _dataSource.Count; i++)
             {
@@ -133,11 +189,6 @@ namespace ProfileOps
                             _profileShape.width = profileMsg.Width;
                             _profileShape.size = profileMsg.Size;
                             //generate csv file for point data save
-                            _syncContext.Post(new SendOrPostCallback(delegate {
-                                updateMsg("x resolution:" + _dataContext.xResolution.ToString());
-                                updateMsg("z resolution:" + _dataContext.zResolution.ToString());
-
-                            }), null);
                             short[] points = new short[_profileShape.width];
                             ProfilePoint[] profileBuffer = new ProfilePoint[_profileShape.width];
                             IntPtr pointsPtr = profileMsg.Data;
@@ -157,10 +208,13 @@ namespace ProfileOps
                                     profileBuffer[arrayIndex].x = _dataContext.xOffset + _dataContext.xResolution * arrayIndex;
                                     profileBuffer[arrayIndex].z = -32768;
                                 }
+
+                                zValueList.Add(profileBuffer[arrayIndex].z);
                             }
 
 
                             sb.Clear();
+
 
                             if (!File.Exists(filePath))
                             {
@@ -170,6 +224,7 @@ namespace ProfileOps
                                 for (int k = 0; k < profileBuffer.Length; k++)
                                 {
                                     sb.Append(profileBuffer[k].x.ToString() + ",");
+
                                 }
                                 sb.Append(Environment.NewLine);
                                 File.AppendAllText(filePath, sb.ToString());
@@ -296,14 +351,71 @@ namespace ProfileOps
         }
 
 
+        List<List<int>> Range2Pixel(int YColumn)
+        {
+            List<int> pixelList = new List<int>();
+
+            foreach (var item in zValueList)
+            {
+                if (item != -32768)
+                {
+                    pixelList.Add(PixelTrans(item));
+
+                }
+                else
+                {
+                    pixelList.Add(0);
+                }
+            }
 
 
-        BitmapImage ImageGenerator(List<ProfilePoint> pointList)
+            return SplitPixelData(pixelList, YColumn);
+
+        }
+
+        List<int> Range2Pixel()
+        {
+            List<int> pixelList = new List<int>();
+            foreach (var item in zValueList)
+            {
+                if (item != -32768)
+                {
+                    pixelList.Add(PixelTrans(item));
+
+                }
+                else
+                {
+                    pixelList.Add(0);
+                }
+            }
+            return pixelList;
+
+        }
+
+
+        int PixelTrans(double value)
+        {
+            return (int)(256 * (value + 12.5) / 25);
+        }
+
+
+        List<List<int>> SplitPixelData(List<int> pixelData, int YColumn)
         {
 
-            BitmapImage bitmap = new BitmapImage();
-            
-            return null;
+            int XRow = (int)pixelData.Count / YColumn;
+            List<List<int>> splittedData = new List<List<int>>();
+            for (int i = 0; i < YColumn; i++)
+            {
+                List<int> tempList = new List<int>();
+                for (int j = (0 + XRow * i); j < (XRow + XRow * i); j++)
+                {
+                    tempList.Add(pixelData[j]);
+                }
+                splittedData.Add(tempList);
+            }
+
+            return splittedData;
+
         }
 
     }
