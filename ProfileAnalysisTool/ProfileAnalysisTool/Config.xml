@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<pets>
+  <cat>
+    <price>100</price>
+    <desc>this is a black cat</desc>
+  </cat>
+  <cat>
+    <price>80</price>
+    <desc>this is a white cat</desc>
+  </cat>
+  <cat>
+    <price>110</price>
+    <desc>this is a yellow cat</desc>
+  </cat>
+  <dog>
+    <price>114</price>
+    <desc>this is a black dog</desc>
+  </dog>
+  <dog>
+    <price>80</price>
+    <desc>this is a white dog</desc>
+  </dog>
+  <dog>
+    <price>80</price>
+    <desc>this is a yellow dog</desc>
+  </dog>
+  <pig>
+    <price>8000</price>
+    <desc>this is a white pig</desc>
+  </pig>
+</pets>

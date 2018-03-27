@@ -70,7 +70,6 @@ namespace ProfileOps
         SynchronizationContext _syncContext;
         BackgroundWorker _profileProcessWorker;
         List<double> zValueList;
-        Mutex mutex;
         public static string filePath = @"C:\ProfileData.csv";
         public static string rawDataPath = @"C:\RawData.csv";
         public static string imgFilePath = @"C:\test.bmp";
@@ -111,7 +110,7 @@ namespace ProfileOps
 
             List<List<int>> splittedData = new List<List<int>>();
 
-            splittedData = Range2Pixel(52);
+            splittedData = Range2Pixel(600);
 
 
 
@@ -127,8 +126,6 @@ namespace ProfileOps
 
         }
 
-        
-
         /// <summary>
         /// using opencv to generate 16bit greyscale bitmap
         /// </summary>
@@ -138,9 +135,9 @@ namespace ProfileOps
         {
             int width = splittedData[0].Count;
             int height = splittedData.Count;
-            System.Drawing.Size size = new System.Drawing.Size(width, height);;
-            GCHandle gc = GCHandle.Alloc(listData);
-            Image<Gray,Byte> image = new Image<Gray, Byte>(width,height);
+            System.Drawing.Size size = new System.Drawing.Size(width, height); ;
+            //GCHandle gc = GCHandle.Alloc(listData);
+            Image<Gray, Byte> image = new Image<Gray, Byte>(width, height);
             for (int i = 0; i < height; i++)
             {
                 for (int j = 0; j < width; j++)
@@ -149,19 +146,9 @@ namespace ProfileOps
                 }
             }
 
-
             image.Save(imgFilePath);
 
         }
-
-
-
-
-
-
-        double minZ = 0;
-        double maxZ = 0;
-
 
         void ProfileProcessingFunc(KObject data, int dataQuene)
         {
@@ -172,8 +159,6 @@ namespace ProfileOps
             ProfileShape _profileShape = new ProfileShape();
             StringBuilder sb = new StringBuilder();
             StringBuilder rawSb = new StringBuilder();
-
-
             for (UInt32 i = 0; i < _dataSource.Count; i++)
             {
                 GoDataMsg dataObj = (GoDataMsg)_dataSource.Get(i);
@@ -252,14 +237,11 @@ namespace ProfileOps
             }
         }
 
-
-
         void updateMsg(string msg)
         {
             MsgBlock.AppendText(msg + Environment.NewLine);
 
         }
-
 
         bool initialApi()
         {
@@ -306,13 +288,11 @@ namespace ProfileOps
 
             return timeStr;
         }
-        int count = 1;
-        int index = 0;
 
         private void OnDataReceived(KObject data)
         {
             _dataList.Add(data);
-            if (_dataList.Count == 52)
+            if (_dataList.Count == 600)
             {
                 _syncContext.Post(new SendOrPostCallback(delegate { updateMsg("Data Stream End"); updateMsg(_dataList.Count.ToString()); }), null);
 
