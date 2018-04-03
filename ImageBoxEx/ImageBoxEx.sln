@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMI.Gocator.Tools.ImageBoxEx", "LMI.Gocator.Tools.ImageBoxEx.csproj", "{39D5FEAD-3B43-4332-80AB-A6E96A501698}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApp1", "..\WindowsFormsApp1\WindowsFormsApp1.csproj", "{5F80EF9C-4934-45D2-99B4-8E030E45D903}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{39D5FEAD-3B43-4332-80AB-A6E96A501698}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39D5FEAD-3B43-4332-80AB-A6E96A501698}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39D5FEAD-3B43-4332-80AB-A6E96A501698}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39D5FEAD-3B43-4332-80AB-A6E96A501698}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F80EF9C-4934-45D2-99B4-8E030E45D903}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F80EF9C-4934-45D2-99B4-8E030E45D903}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F80EF9C-4934-45D2-99B4-8E030E45D903}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F80EF9C-4934-45D2-99B4-8E030E45D903}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F7FDBF21-7702-4427-8F51-4896BAF51A3B}
+	EndGlobalSection
+EndGlobal
