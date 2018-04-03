@@ -9,7 +9,7 @@ namespace LMI.Gocator.Tools
     [DefaultProperty("Image")]
     [ToolboxBitmap(typeof(ImageBox), "ImageBox.bmp")]
     [ToolboxItem(true)]
-    public class ImageBoxEx:ImageBox
+    public class ImageBoxEx : ImageBox
     {
         #region Instance Fields
 
@@ -21,6 +21,9 @@ namespace LMI.Gocator.Tools
 
         private Size _minimumSelectionSize;
 
+        private GraphicsGroup graphicsGroup;
+         
+
         #endregion
 
         #region Public Constructors
@@ -31,6 +34,9 @@ namespace LMI.Gocator.Tools
             this.DragHandleSize = 8;
             this.MinimumSelectionSize = Size.Empty;
             this.PositionDragHandles();
+
+            graphicsGroup = new GraphicsGroup();
+            graphicsGroup.GraphicElementList = new System.Collections.Generic.List<IGraphicElement>();
         }
 
         #endregion
@@ -845,5 +851,41 @@ namespace LMI.Gocator.Tools
             this.ResumeLayout(false);
 
         }
+
+
+
+        #region Graphics Process
+        void AddGraphicElement(IGraphicElement _element)
+        {
+            this.graphicsGroup.GraphicElementList.Add(_element);
+        }
+
+        public void ClearGraphicsGroup()
+        {
+            this.graphicsGroup.GraphicElementList.Clear();
+        }
+
+        public void DrawGraphics(Graphics g)
+        {
+            this.graphicsGroup.GraphicsGroupDraw(g);
+        }
+
+
+        public void AddLineToGraphics(PointF _pointStart, PointF _pointEnd, Pen linePen)
+        {
+            LineElement lineElement = new LineElement(_pointStart, _pointEnd);
+            lineElement.LinePen = linePen;
+            this.graphicsGroup.GraphicElementList.Add(lineElement);
+        }
+
+        public void AddRectToGraphics(RectangleF rect, Pen rectPen, Brush rectBrush)
+        {
+            RectangleElement rectElement = new RectangleElement(rect);
+            rectElement.RectPen = rectPen;
+            rectElement.RectBrush = rectBrush;
+            this.graphicsGroup.GraphicElementList.Add(rectElement);
+        }
+
+        #endregion
     }
 }

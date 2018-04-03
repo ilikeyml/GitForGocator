@@ -45,6 +45,9 @@
     <Compile Include="DragHandle.cs" />
     <Compile Include="DragHandleAnchor.cs" />
     <Compile Include="DragHandleCollection.cs" />
+    <Compile Include="GraphicsElementType.cs" />
+    <Compile Include="IGraphicElement.cs" />
+    <Compile Include="GraphicsGroup.cs" />
     <Compile Include="ImageBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -62,12 +65,14 @@
     <Compile Include="ImageBoxSizeMode.cs" />
     <Compile Include="ImageBoxZoomActions.cs" />
     <Compile Include="ImageBoxZoomEventArgs.cs" />
+    <Compile Include="LineElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="RectangleElement.cs" />
     <Compile Include="ScrollControl.cs">
       <SubType>Component</SubType>
     </Compile>
